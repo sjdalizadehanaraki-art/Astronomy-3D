@@ -1,250 +1,446 @@
 import * as THREE from "three";
-import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 const scene = new THREE.Scene();
-
 scene.background = new THREE.Color(0x000000);
 
 const camera = new THREE.PerspectiveCamera(
-45,
-window.innerWidth/window.innerHeight,
-0.1,
-1000
+    45,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
 );
 
-camera.position.set(12,10,12);
+// ---------- Z is Up ----------
+camera.up.set(0,0,1);
 
-const renderer=new THREE.WebGLRenderer({
-antialias:true
+// زاویه اولیه
+camera.position.set(12,-12,10);
+camera.lookAt(0,0,0);
+
+const renderer = new THREE.WebGLRenderer({
+    antialias:true
 });
 
-renderer.setSize(window.innerWidth,window.innerHeight);
+renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
+);
 
 document.body.appendChild(renderer.domElement);
 
-const controls=new OrbitControls(camera,renderer.domElement);
+const controls = new OrbitControls(
+    camera,
+    renderer.domElement
+);
 
-controls.enableDamping=true;
-
+controls.enableDamping = true;
 controls.target.set(0,0,0);
-
 controls.update();
 
-scene.add(new THREE.AmbientLight(0xffffff,2));
-
-
+scene.add(
+    new THREE.AmbientLight(
+        0xffffff,
+        2
+    )
+);
 
 function createAxis(color,start,end){
 
-const material=new THREE.LineBasicMaterial({color});
+    const material =
+        new THREE.LineBasicMaterial({
+            color:color
+        });
 
-const geometry=new THREE.BufferGeometry().setFromPoints([
-start,
-end
-]);
+    const geometry =
+        new THREE.BufferGeometry()
+        .setFromPoints([
+            start,
+            end
+        ]);
 
-const line=new THREE.Line(geometry,material);
+    const line =
+        new THREE.Line(
+            geometry,
+            material
+        );
 
-scene.add(line);
+    scene.add(line);
 
 }
 
+createAxis(
+    0xff0000,
+    new THREE.Vector3(-12,0,0),
+    new THREE.Vector3(12,0,0)
+);
 
+createAxis(
+    0x00ff00,
+    new THREE.Vector3(0,-12,0),
+    new THREE.Vector3(0,12,0)
+);
+
+createAxis(
+    0x0088ff,
+    new THREE.Vector3(0,0,-12),
+    new THREE.Vector3(0,0,12)
+);
 
 function createTicks(axis,color){
 
-const material=new THREE.LineBasicMaterial({color});
+    const material =
+        new THREE.LineBasicMaterial({
+            color:color
+        });
 
-for(let i=-12;i<=12;i++){
+    for(let i=-12;i<=12;i++){
 
-if(i===0) continue;
+        if(i===0) continue;
 
-let p1,p2;
+        let p1;
+        let p2;
 
-switch(axis){
+        if(axis==="x"){
 
-case "x":
+            p1=new THREE.Vector3(
+                i,
+                -0.12,
+                0
+            );
 
-p1=new THREE.Vector3(i,-0.12,0);
+            p2=new THREE.Vector3(
+                i,
+                0.12,
+                0
+            );
 
-p2=new THREE.Vector3(i,0.12,0);
+        }
 
-break;
+        if(axis==="y"){
 
-case "y":
+            p1=new THREE.Vector3(
+                -0.12,
+                i,
+                0
+            );
 
-p1=new THREE.Vector3(-0.12,i,0);
+            p2=new THREE.Vector3(
+                0.12,
+                i,
+                0
+            );
 
-p2=new THREE.Vector3(0.12,i,0);
+        }
 
-break;
+        if(axis==="z"){
 
-case "z":
+            p1=new THREE.Vector3(
+                -0.12,
+                0,
+                i
+            );
 
-p1=new THREE.Vector3(-0.12,0,i);
+            p2=new THREE.Vector3(
+                0.12,
+                0,
+                i
+            );
 
-p2=new THREE.Vector3(0.12,0,i);
+        }
 
-break;
+        const geo =
+            new THREE.BufferGeometry()
+            .setFromPoints([
+                p1,
+                p2
+            ]);
+
+        scene.add(
+            new THREE.Line(
+                geo,
+                material
+            )
+        );
+
+    }
 
 }
-
-const geo=new THREE.BufferGeometry().setFromPoints([p1,p2]);
-
-scene.add(new THREE.Line(geo,material));
-
-}
-
-}
-
-
-
-createAxis(
-0xff0000,
-new THREE.Vector3(-12,0,0),
-new THREE.Vector3(12,0,0)
-);
-
-createAxis(
-0x00ff00,
-new THREE.Vector3(0,-12,0),
-new THREE.Vector3(0,12,0)
-);
-
-createAxis(
-0x0088ff,
-new THREE.Vector3(0,0,-12),
-new THREE.Vector3(0,0,12)
-);
-
-
 
 createTicks("x",0xff0000);
-
 createTicks("y",0x00ff00);
-
 createTicks("z",0x0088ff);
 
+// ---------- Arrow X ----------
 
-
-const xArrow=new THREE.ArrowHelper(
-new THREE.Vector3(1,0,0),
-new THREE.Vector3(11.2,0,0),
-0.8,
-0xff0000
+const xArrow = new THREE.ArrowHelper(
+    new THREE.Vector3(1,0,0),
+    new THREE.Vector3(11.2,0,0),
+    0.8,
+    0xff0000,
+    0.35,
+    0.20
 );
 
 scene.add(xArrow);
 
 
+// ---------- Arrow Y ----------
 
-const yArrow=new THREE.ArrowHelper(
-new THREE.Vector3(0,1,0),
-new THREE.Vector3(0,11.2,0),
-0.8,
-0x00ff00
+const yArrow = new THREE.ArrowHelper(
+    new THREE.Vector3(0,1,0),
+    new THREE.Vector3(0,11.2,0),
+    0.8,
+    0x00ff00,
+    0.35,
+    0.20
 );
 
 scene.add(yArrow);
 
 
+// ---------- Arrow Z ----------
 
-const zArrow=new THREE.ArrowHelper(
-new THREE.Vector3(0,0,1),
-new THREE.Vector3(0,0,11.2),
-0.8,
-0x0088ff
+const zArrow = new THREE.ArrowHelper(
+    new THREE.Vector3(0,0,1),
+    new THREE.Vector3(0,0,11.2),
+    0.8,
+    0x0088ff,
+    0.35,
+    0.20
 );
 
 scene.add(zArrow);
 
 
 
+
+// ---------- Labels ----------
+
 function makeLabel(text,color){
 
-const canvas=document.createElement("canvas");
+    const canvas=document.createElement("canvas");
 
-canvas.width=256;
+    canvas.width=256;
+    canvas.height=256;
 
-canvas.height=256;
+    const ctx=canvas.getContext("2d");
 
-const ctx=canvas.getContext("2d");
+    ctx.clearRect(
+        0,
+        0,
+        256,
+        256
+    );
 
-ctx.fillStyle="rgba(0,0,0,0)";
+    ctx.font="Bold 160px Arial";
 
-ctx.fillRect(0,0,256,256);
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
 
-ctx.fillStyle=color;
+    ctx.fillStyle=color;
 
-ctx.font="Bold 160px Arial";
+    ctx.fillText(
+        text,
+        128,
+        128
+    );
 
-ctx.textAlign="center";
+    const texture=
+        new THREE.CanvasTexture(canvas);
 
-ctx.textBaseline="middle";
+    const material=
+        new THREE.SpriteMaterial({
 
-ctx.fillText(text,128,128);
+            map:texture,
+            transparent:true
 
-const texture=new THREE.CanvasTexture(canvas);
+        });
 
-const material=new THREE.SpriteMaterial({
-map:texture,
-transparent:true
-});
+    const sprite=
+        new THREE.Sprite(material);
 
-const sprite=new THREE.Sprite(material);
+    sprite.scale.set(
+        1,
+        1,
+        1
+    );
 
-sprite.scale.set(1,1,1);
-
-return sprite;
+    return sprite;
 
 }
 
 
 
-const lx=makeLabel("X","red");
+// ---------- X ----------
 
-lx.position.set(12.8,0,0);
+const labelX=makeLabel(
+    "X",
+    "red"
+);
 
-scene.add(lx);
+labelX.position.set(
+    13,
+    0,
+    0
+);
 
-
-
-const ly=makeLabel("Y","lime");
-
-ly.position.set(0,12.8,0);
-
-scene.add(ly);
-
-
-
-const lz=makeLabel("Z","deepskyblue");
-
-lz.position.set(0,0,12.8);
-
-scene.add(lz);
+scene.add(labelX);
 
 
+
+// ---------- Y ----------
+
+const labelY=makeLabel(
+    "Y",
+    "lime"
+);
+
+labelY.position.set(
+    0,
+    13,
+    0
+);
+
+scene.add(labelY);
+
+
+
+// ---------- Z ----------
+
+const labelZ=makeLabel(
+    "Z",
+    "deepskyblue"
+);
+
+labelZ.position.set(
+    0,
+    0,
+    13
+);
+
+scene.add(labelZ);
+
+// --------------------------------------------------
+// OrbitControls تنظیمات
+// --------------------------------------------------
+
+controls.enablePan = false;
+
+controls.enableZoom = true;
+
+controls.minDistance = 5;
+controls.maxDistance = 40;
+
+controls.rotateSpeed = 0.8;
+controls.zoomSpeed = 1.2;
+
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+
+controls.target.set(0,0,0);
+controls.update();
+
+
+// --------------------------------------------------
+// Resize
+// --------------------------------------------------
 
 window.addEventListener("resize",()=>{
 
-camera.aspect=window.innerWidth/window.innerHeight;
+    camera.aspect =
+        window.innerWidth /
+        window.innerHeight;
 
-camera.updateProjectionMatrix();
+    camera.updateProjectionMatrix();
 
-renderer.setSize(window.innerWidth,window.innerHeight);
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
 
 });
 
 
+// --------------------------------------------------
+// یک نقطه کوچک در مرکز مختصات
+// (فقط برای اینکه مرکز صحنه مشخص باشد)
+// --------------------------------------------------
+
+const originGeometry =
+    new THREE.SphereGeometry(
+        0.08,
+        24,
+        24
+    );
+
+const originMaterial =
+    new THREE.MeshBasicMaterial({
+
+        color:0xffffff
+
+    });
+
+const origin =
+    new THREE.Mesh(
+        originGeometry,
+        originMaterial
+    );
+
+scene.add(origin);
+
+
+// --------------------------------------------------
+// Animation
+// --------------------------------------------------
 
 function animate(){
 
-requestAnimationFrame(animate);
+    requestAnimationFrame(
+        animate
+    );
 
-controls.update();
+    controls.update();
 
-renderer.render(scene,camera);
+    renderer.render(
+        scene,
+        camera
+    );
 
 }
 
 animate();
+
+// ======================================================
+// پایان مرحله ۱
+// ======================================================
+
+// نمایش مختصات فعلی دوربین در کنسول (برای توسعه)
+window.addEventListener("keydown",(e)=>{
+
+    if(e.key==="c"){
+
+        console.log(
+            "Camera Position:",
+            camera.position
+        );
+
+    }
+
+});
+
+// فوکوس اولیه روی مرکز مختصات
+controls.target.set(0,0,0);
+controls.update();
+
+// اولین رندر
+renderer.render(
+    scene,
+    camera
+);
+
+// ------------------------------------------------------
+// Stage 1 Complete
+// ------------------------------------------------------
+
+console.log("STEP 01 LOADED");
